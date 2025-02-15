@@ -1,0 +1,4 @@
+python-telegram-bot
+pandas
+schedule
+gdown  # Se usi Google Drive per il CSV
