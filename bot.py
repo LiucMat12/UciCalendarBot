@@ -5,7 +5,7 @@ import schedule
 import time
 import datetime
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, CallbackContext
 
 # Imposta il logging per debug
 logging.basicConfig(level=logging.INFO)
@@ -69,25 +69,16 @@ def next_5_events(update: Update, context: CallbackContext):
 
 # Configura il bot con i comandi
 def main():
-    from telegram.ext import Application
+    # Correzione indentazione
+    app = Application.builder().token(TOKEN).build()
 
-app = Application.builder().token(TOKEN).build()
+    app.add_handler(CommandHandler("next", next_event))
+    app.add_handler(CommandHandler("next5events", next_5_events))
 
-    dp = app
+    # Pianifica l'invio giornaliero del promemoria alle 09:00
+    schedule.every().day.at("09:00").do(lambda: send_reminder(app))
 
-    dp.add_handler(CommandHandler("next", next_event))
-    dp.add_handler(CommandHandler("next5events", next_5_events))
-
-    # Pianifica l'invio giornaliero del promemoria
-    schedule.every().day.at("09:00").do(lambda: send_reminder(updater.bot))
-
-    app.run_polling()
-
-    # Loop per eseguire i job pianificati
-    while True:
-        schedule.run_pending()
-        time.sleep(60)
-
+    # Avvia il bot
     app.run_polling()
 
 if __name__ == "__main__":
