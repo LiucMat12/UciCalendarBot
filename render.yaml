@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: bot-telegram
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "bash start.sh"
+    envVars:
+      - key: 7981437591:AAGQqWOzccytWLRC6HDKPQtRgzJAaxaWAbI
+        sync: false
+      - key: CHAT_ID
+        sync: false
