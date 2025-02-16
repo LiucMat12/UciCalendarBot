@@ -16,12 +16,14 @@ CHAT_ID = os.getenv("CHAT_ID")
 # Funzione per leggere il file CSV
 def read_events():
     try:
-        df = pd.read_csv("eventi.csv", parse_dates=["data"])
-        df = df.sort_values("data")
+        df = pd.read_csv("events.csv", parse_dates=["data"])  # Parsea le date
+        df["data"] = pd.to_datetime(df["data"], errors="coerce")  # Assicurati che la colonna "data" sia di tipo datetime
+        df = df.sort_values("data")  # Ordina gli eventi per data
         return df
     except Exception as e:
         logger.error(f"Errore nella lettura del CSV: {e}")
         return pd.DataFrame(columns=["data", "event", "descrizione"])
+
 
 # Comando /next per il prossimo evento
 async def next_event(update: Update, context: CallbackContext):
