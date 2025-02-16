@@ -1,39 +1,91 @@
-import pandas as pd
-import datetime
-import time
-import schedule
-from telegram import Bot
-from datetime import datetime, timedelta
 import os
+import pandas as pd
+import logging
+import schedule
+import time
+import datetime
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
-# Ottieni il token del bot e chat ID dalle variabili d'ambiente
-TOKEN_BOT = os.getenv('TOKEN_BOT')
-CHAT_ID = os.getenv('CHAT_ID')
+# Imposta il logging per debug
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-bot = Bot(token=TOKEN_BOT)
+# Carica il token del bot dalle variabili d'ambiente
+TOKEN = os.getenv("TOKEN_BOT")
+CHAT_ID = os.getenv("CHAT_ID")  # Imposta il tuo Chat ID nelle variabili di ambiente
 
-def invia_promemoria():
-    # Percorso al file CSV
-    file_csv= https://github.com/LiucMat12/UciCalendarBot/blob/main/eventi.csv  # Cambia con il percorso effettivo
-    eventi = pd.read_csv(file_csv)
+# Funzione per leggere il file CSV
+def read_events():
+    try:
+        df = pd.read_csv("events.csv", parse_dates=["data"])
+        df = df.sort_values("data")  # Ordina gli eventi per data
+        return df
+    except Exception as e:
+        logger.error(f"Errore nella lettura del CSV: {e}")
+        return pd.DataFrame(columns=["data", "event", "descrizione"])
 
-oggi = datetime.now()
-    domani = oggi + timedelta(days=1)
+# Funzione per inviare un promemoria
+def send_reminder(context: CallbackContext):
+    df = read_events()
+    today = datetime.date.today()
+    tomorrow = today + datetime.timedelta(days=1)
 
-    for _, row in eventi.iterrows():
-        data_evento = datetime.datetime.strptime(row["data"], "%Y-%m-%d").date()
-        if data_evento == domani:
-            messaggio = f"🔔 *Promemoria Evento*\n\n📅 Data: {row['data']}\n🏷 *{row['titolo']}*\n📝 {row['descrizione']}"
-            bot.send_message(chat_id=CHAT_ID, text=messaggio, parse_mode="Markdown")
+    events_tomorrow = df[df["data"].dt.date == tomorrow]
 
-# Pianifica l'esecuzione del promemoria una volta al giorno
-schedule.every().day.at("09:00").do(invia_promemoria)  # Esegui ogni giorno alle 9:00 AM
+    for _, event in events_tomorrow.iterrows():
+        message = f"🔔 *Promemoria Evento*\n📅 {event['data'].strftime('%d-%m-%Y')}\n📌 {event['event']}\n📝 {event['descrizione']}"
+        context.bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="Markdown")
 
-schedule.every().day.at("12:00").do(invia_promemoria)  # Esegui ogni giorno alle 12:00 AM
+# Comando /next per il prossimo evento
+def next_event(update: Update, context: CallbackContext):
+    df = read_events()
+    today = datetime.date.today()
+    future_events = df[df["data"].dt.date >= today]
+
+    if not future_events.empty:
+        next_event = future_events.iloc[0]
+        message = f"🎯 *Prossimo Evento*\n📅 {next_event['data'].strftime('%d-%m-%Y')}\n📌 {next_event['event']}\n📝 {next_event['descrizione']}"
+    else:
+        message = "🚫 Nessun evento in programma."
+
+    update.message.reply_text(message, parse_mode="Markdown")
+
+# Comando /next5events per i prossimi 5 eventi
+def next_5_events(update: Update, context: CallbackContext):
+    df = read_events()
+    today = datetime.date.today()
+    future_events = df[df["data"].dt.date >= today]
+
+    if not future_events.empty:
+        events_list = future_events.head(5)
+        message = "📅 *Prossimi 5 Eventi:*\n"
+        for _, event in events_list.iterrows():
+            message += f"🔹 {event['data'].strftime('%d-%m-%Y')} - {event['event']}\n"
+    else:
+        message = "🚫 Nessun evento in programma."
+
+    update.message.reply_text(message, parse_mode="Markdown")
+
+# Configura il bot con i comandi
+def main():
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("next", next_event))
+    dp.add_handler(CommandHandler("next5events", next_5_events))
+
+    # Pianifica l'invio giornaliero del promemoria
+    schedule.every().day.at("09:00").do(lambda: send_reminder(updater.bot))
+
+    updater.start_polling()
+
+    # Loop per eseguire i job pianificati
+    while True:
+        schedule.run_pending()
+        time.sleep(60)
+
+    updater.idle()
 
 if __name__ == "__main__":
-    # Loop infinito per eseguire il controllo
-while True:
-    schedule.run_pending()
-    time.sleep(60)  # Attendi un minuto prima di controllare di nuovo
-
+    main()
