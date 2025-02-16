@@ -14,7 +14,7 @@ bot = Bot(token=TOKEN_BOT)
 
 def invia_promemoria():
     # Percorso al file CSV
-    file_csv = '/app/repository/eventi.csv'  # Cambia con il percorso effettivo
+    file_csv= https://github.com/LiucMat12/UciCalendarBot/blob/main/eventi.csv  # Cambia con il percorso effettivo
     eventi = pd.read_csv(file_csv)
 
 oggi = datetime.now()
