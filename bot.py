@@ -85,7 +85,7 @@ def main():
     app.add_handler(CommandHandler("next5events", next_5_events))
 
     # Aggiunge il job per il promemoria giornaliero alle 9:00
-    app.job_queue.run_daily(send_reminder, time=datetime.time(hour=16, minute=35))
+    app.job_queue.run_daily(send_reminder, time=datetime.time(hour=9, minute=0))
 
     logger.info("Il bot è avviato e in ascolto dei comandi...")
     app.run_polling()
