@@ -1,44 +1,30 @@
 import os
 import pandas as pd
 import logging
-import schedule
-import time
 import datetime
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
 
-# Imposta il logging per debug
+# Configura il logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Carica il token del bot dalle variabili d'ambiente
+# Carica il token dalle variabili d'ambiente
 TOKEN = os.getenv("TOKEN_BOT")
-CHAT_ID = os.getenv("CHAT_ID")  # Imposta il tuo Chat ID nelle variabili di ambiente
+CHAT_ID = os.getenv("CHAT_ID")
 
 # Funzione per leggere il file CSV
 def read_events():
     try:
         df = pd.read_csv("events.csv", parse_dates=["data"])
-        df = df.sort_values("data")  # Ordina gli eventi per data
+        df = df.sort_values("data")
         return df
     except Exception as e:
         logger.error(f"Errore nella lettura del CSV: {e}")
         return pd.DataFrame(columns=["data", "event", "descrizione"])
 
-# Funzione per inviare un promemoria
-def send_reminder(context: CallbackContext):
-    df = read_events()
-    today = datetime.date.today()
-    tomorrow = today + datetime.timedelta(days=1)
-
-    events_tomorrow = df[df["data"].dt.date == tomorrow]
-
-    for _, event in events_tomorrow.iterrows():
-        message = f"🔔 *Promemoria Evento*\n📅 {event['data'].strftime('%d-%m-%Y')}\n📌 {event['event']}\n📝 {event['descrizione']}"
-        context.bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="Markdown")
-
 # Comando /next per il prossimo evento
-def next_event(update: Update, context: CallbackContext):
+async def next_event(update: Update, context: CallbackContext):
     df = read_events()
     today = datetime.date.today()
     future_events = df[df["data"].dt.date >= today]
@@ -49,10 +35,10 @@ def next_event(update: Update, context: CallbackContext):
     else:
         message = "🚫 Nessun evento in programma."
 
-    update.message.reply_text(message, parse_mode="Markdown")
+    await update.message.reply_text(message, parse_mode="Markdown")
 
 # Comando /next5events per i prossimi 5 eventi
-def next_5_events(update: Update, context: CallbackContext):
+async def next_5_events(update: Update, context: CallbackContext):
     df = read_events()
     today = datetime.date.today()
     future_events = df[df["data"].dt.date >= today]
@@ -65,20 +51,16 @@ def next_5_events(update: Update, context: CallbackContext):
     else:
         message = "🚫 Nessun evento in programma."
 
-    update.message.reply_text(message, parse_mode="Markdown")
+    await update.message.reply_text(message, parse_mode="Markdown")
 
 # Configura il bot con i comandi
 def main():
-    # Correzione indentazione
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("next", next_event))
     app.add_handler(CommandHandler("next5events", next_5_events))
 
-    # Pianifica l'invio giornaliero del promemoria alle 09:00
-    schedule.every().day.at("09:00").do(lambda: send_reminder(app))
-
-    # Avvia il bot
+    logger.info("Il bot è avviato e in ascolto dei comandi...")
     app.run_polling()
 
 if __name__ == "__main__":
