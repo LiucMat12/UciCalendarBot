@@ -69,8 +69,11 @@ def next_5_events(update: Update, context: CallbackContext):
 
 # Configura il bot con i comandi
 def main():
-    updater = Updater(TOKEN, use_context=True)
-    dp = updater.dispatcher
+    from telegram.ext import Application
+
+app = Application.builder().token(TOKEN).build()
+
+    dp = app
 
     dp.add_handler(CommandHandler("next", next_event))
     dp.add_handler(CommandHandler("next5events", next_5_events))
@@ -78,14 +81,14 @@ def main():
     # Pianifica l'invio giornaliero del promemoria
     schedule.every().day.at("09:00").do(lambda: send_reminder(updater.bot))
 
-    updater.start_polling()
+    app.run_polling()
 
     # Loop per eseguire i job pianificati
     while True:
         schedule.run_pending()
         time.sleep(60)
 
-    updater.idle()
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
