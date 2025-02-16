@@ -16,7 +16,7 @@ CHAT_ID = os.getenv("CHAT_ID")
 # Funzione per leggere il file CSV
 def read_events():
     try:
-        df = pd.read_csv("events.csv", parse_dates=["data"])
+        df = pd.read_csv("eventi.csv", parse_dates=["data"])
         df = df.sort_values("data")
         return df
     except Exception as e:
