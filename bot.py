@@ -4,8 +4,8 @@ import time
 import schedule
 from telegram import Bot
 
-TOKEN = 7981437591:AAGQqWOzccytWLRC6HDKPQtRgzJAaxaWAbI
-CHAT_ID = "IL_TUO_CHAT_ID"
+TOKEN = "7981437591:AAGQqWOzccytWLRC6HDKPQtRgzJAaxaWAbI"
+CHAT_ID = "916301720"
 FILE_CSV = "eventi.csv"
 
 bot = Bot(token=TOKEN)
