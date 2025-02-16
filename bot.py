@@ -23,6 +23,8 @@ def invia_promemoria():
 
 schedule.every().day.at("09:00").do(invia_promemoria)
 
+schedule.every().day.at("00:01").do(invia_promemoria)
+
 if __name__ == "__main__":
     while True:
         schedule.run_pending()
