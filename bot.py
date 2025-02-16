@@ -24,26 +24,25 @@ def read_events():
         logger.error(f"Errore nella lettura del CSV: {e}")
         return pd.DataFrame(columns=["data", "event", "descrizione"])
 
-# Funzione per ottenere l'evento del giorno o il successivo disponibile
+# Funzione per ottenere l'evento di oggi o il prossimo disponibile
 def get_daily_event():
     df = read_events()
     today = datetime.date.today()
 
     # Controlla se c'è un evento oggi
     events_today = df[df["data"].dt.date == today]
-
     if not events_today.empty:
-        return events_today.iloc[0]  # Restituisce il primo evento di oggi
+        return events_today.iloc[0]
 
     # Se non ci sono eventi oggi, cerca il primo evento futuro
     future_events = df[df["data"].dt.date > today]
     if not future_events.empty:
-        return future_events.iloc[0]  # Restituisce il primo evento futuro
+        return future_events.iloc[0]
 
     return None  # Nessun evento disponibile
 
-# Funzione per inviare il promemoria automatico ogni giorno alle 9:00
-async def send_daily_reminder(context: CallbackContext):
+# Funzione per inviare il promemoria ogni giorno alle 9:00
+async def send_reminder(context: CallbackContext):
     event = get_daily_event()
     if event is not None:
         message = f"🔔 *Promemoria Gara*\n📅 {event['data'].strftime('%d-%m-%Y')}\n📌 {event['event']}\n📝 {event['descrizione']}"
@@ -52,7 +51,7 @@ async def send_daily_reminder(context: CallbackContext):
 
     await context.bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="Markdown")
 
-# Comando /next per il prossimo evento
+# Comando /next per vedere il prossimo evento
 async def next_event(update: Update, context: CallbackContext):
     event = get_daily_event()
     if event is not None:
@@ -62,7 +61,7 @@ async def next_event(update: Update, context: CallbackContext):
 
     await update.message.reply_text(message, parse_mode="Markdown")
 
-# Comando /next5events per i prossimi 5 eventi
+# Comando /next5events per vedere i prossimi 5 eventi
 async def next_5_events(update: Update, context: CallbackContext):
     df = read_events()
     today = datetime.date.today()
@@ -86,7 +85,7 @@ def main():
     app.add_handler(CommandHandler("next5events", next_5_events))
 
     # Aggiunge il job per il promemoria giornaliero alle 9:00
-    app.job_queue.run_daily(send_daily_reminder, time=datetime.time(hour=9, minute=0))
+    app.job_queue.run_daily(send_reminder, time=datetime.time(hour=9, minute=0))
 
     logger.info("Il bot è avviato e in ascolto dei comandi...")
     app.run_polling()
