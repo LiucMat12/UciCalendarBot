@@ -122,7 +122,9 @@ def main():
     # Configura JobQueue per il promemoria automatico
     job_queue = app.job_queue
     job_queue.run_daily(send_reminder, time=time(hour=23, minute=1, tzinfo=pytz.UTC))  # 00:01 italiane
-    job_queue.run_weekly(send_weekly_summary, time=time(hour=23, minute=1, tzinfo=pytz.UTC), days=(6,))  # Domenica
+
+    # Pianifica il riepilogo settimanale ogni domenica alle 00:01 italiane
+    job_queue.run_daily(send_weekly_summary, time=time(hour=23, minute=1, tzinfo=pytz.UTC), days=(6,))  # 6 = Domenica
 
     logger.info("Il bot è avviato e in ascolto dei comandi...")
     app.run_polling()
