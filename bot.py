@@ -14,6 +14,9 @@ logger = logging.getLogger(__name__)
 # Carica il token dalle variabili d'ambiente
 TOKEN = os.getenv("TOKEN_BOT")
 
+# Memorizza l'ultimo promemoria inviato
+LAST_REMINDER = None
+
 # Configura il fuso orario italiano
 ITALY_TZ = pytz.timezone("Europe/Rome")
 
@@ -95,6 +98,42 @@ async def next_event(update: Update, context: CallbackContext):
 
     await update.message.reply_text(message, parse_mode="Markdown")
 
+# Comando /next5events per i prossimi 5 eventi
+async def next_5_events(update: Update, context: CallbackContext):
+    df = read_events()
+    today = datetime.now(ITALY_TZ).date()
+    future_events = df[df["data"].dt.date >= today]
+
+    if not future_events.empty:
+        events_list = future_events.head(5)
+        message = "📅 *Prossimi 5 Eventi:*\n"
+        for _, event in events_list.iterrows():
+            message += f"🔹 {event['data'].strftime('%d-%m-%Y')} - {event['event']}\n"
+    else:
+        message = "🚫 Nessun evento in programma."
+
+    await update.message.reply_text(message, parse_mode="Markdown")
+
+# Funzione per il riepilogo settimanale delle gare
+async def send_weekly_summary(context: CallbackContext):
+    df = read_events()
+    today = datetime.now(ITALY_TZ).date()
+    next_monday = today + timedelta(days=(7 - today.weekday()))  # Prossimo lunedì
+    next_sunday = next_monday + timedelta(days=6)  # Fine settimana
+
+    upcoming_events = df[(df["data"].dt.date >= next_monday) & (df["data"].dt.date <= next_sunday)]
+    
+    if not upcoming_events.empty:
+        message = "📆 *Gare della prossima settimana:*\n"
+        for _, event in upcoming_events.iterrows():
+            message += f"🔹 {event['data'].strftime('%d-%m-%Y')} - {event['event']}\n"
+    else:
+        message = "🚫 Nessuna gara programmata per la prossima settimana."
+
+    await context.bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="Markdown")
+
+
+
 # Configura il bot con i comandi e la JobQueue
 def main():
     app = Application.builder().token(TOKEN).build()
@@ -102,10 +141,15 @@ def main():
     # Aggiungi i comandi
     app.add_handler(CommandHandler("start", start))  # REGISTRA GLI UTENTI
     app.add_handler(CommandHandler("next", next_event))
+app.add_handler(CommandHandler("next5events", next_5_events))
+app.add_handler(CommandHandler("lastreminder", last_reminder))  # Nuovo comando
 
     # Configura JobQueue per il promemoria automatico
     job_queue = app.job_queue
     job_queue.run_daily(send_reminder, time=time(hour=23, minute=1, tzinfo=pytz.UTC))  # 00:01 italiane
+
+Pianifica il riepilogo settimanale ogni domenica alle 00:01 italiane
+    job_queue.run_daily(send_weekly_summary, time=time(hour=23, minute=1, tzinfo=pytz.UTC), days=(6,))  # 6 = Domenica
 
     logger.info("Il bot è avviato e in ascolto dei comandi...")
     app.run_polling()
