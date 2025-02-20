@@ -14,9 +14,6 @@ logger = logging.getLogger(__name__)
 # Carica il token dalle variabili d'ambiente
 TOKEN = os.getenv("TOKEN_BOT")
 
-# Memorizza l'ultimo promemoria inviato
-LAST_REMINDER = None
-
 # Configura il fuso orario italiano
 ITALY_TZ = pytz.timezone("Europe/Rome")
 
@@ -122,7 +119,7 @@ async def send_weekly_summary(context: CallbackContext):
     next_sunday = next_monday + timedelta(days=6)  # Fine settimana
 
     upcoming_events = df[(df["data"].dt.date >= next_monday) & (df["data"].dt.date <= next_sunday)]
-    
+
     if not upcoming_events.empty:
         message = "📆 *Gare della prossima settimana:*\n"
         for _, event in upcoming_events.iterrows():
@@ -130,9 +127,12 @@ async def send_weekly_summary(context: CallbackContext):
     else:
         message = "🚫 Nessuna gara programmata per la prossima settimana."
 
-    await context.bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="Markdown")
-
-
+    users = load_users()
+    for user_id in users:
+        try:
+            await context.bot.send_message(chat_id=user_id, text=message, parse_mode="Markdown")
+        except Exception as e:
+            logger.error(f"Errore nell'invio del riepilogo settimanale a {user_id}: {e}")
 
 # Configura il bot con i comandi e la JobQueue
 def main():
@@ -141,15 +141,12 @@ def main():
     # Aggiungi i comandi
     app.add_handler(CommandHandler("start", start))  # REGISTRA GLI UTENTI
     app.add_handler(CommandHandler("next", next_event))
-app.add_handler(CommandHandler("next5events", next_5_events))
-app.add_handler(CommandHandler("lastreminder", last_reminder))  # Nuovo comando
+    app.add_handler(CommandHandler("next5events", next_5_events))
 
     # Configura JobQueue per il promemoria automatico
     job_queue = app.job_queue
     job_queue.run_daily(send_reminder, time=time(hour=23, minute=1, tzinfo=pytz.UTC))  # 00:01 italiane
-
-Pianifica il riepilogo settimanale ogni domenica alle 00:01 italiane
-    job_queue.run_daily(send_weekly_summary, time=time(hour=23, minute=1, tzinfo=pytz.UTC), days=(6,))  # 6 = Domenica
+    job_queue.run_daily(send_weekly_summary, time=time(hour=23, minute=1, tzinfo=pytz.UTC), days=(6,))  # Domenica
 
     logger.info("Il bot è avviato e in ascolto dei comandi...")
     app.run_polling()
