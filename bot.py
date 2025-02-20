@@ -20,6 +20,9 @@ ITALY_TZ = pytz.timezone("Europe/Rome")
 # File per salvare gli utenti
 USER_FILE = "users.json"
 
+# Variabile globale per mantenere i dati degli eventi in memoria
+events_df = pd.DataFrame(columns=["data", "event", "descrizione"])
+
 # Funzione per caricare la lista di utenti registrati
 def load_users():
     try:
@@ -45,29 +48,28 @@ async def start(update: Update, context: CallbackContext):
     else:
         await update.message.reply_text("ℹ️ Sei già registrato.")
 
-# Funzione per leggere il file CSV
-def read_events():
+# Funzione per leggere il file CSV e aggiornare la variabile globale
+def update_events():
+    global events_df
     try:
-        df = pd.read_csv("eventi.csv", parse_dates=["data"])
-        df["data"] = pd.to_datetime(df["data"], errors="coerce")
-        df = df.sort_values("data")
-        return df
+        events_df = pd.read_csv("eventi.csv", parse_dates=["data"])
+        events_df["data"] = pd.to_datetime(events_df["data"], errors="coerce")
+        events_df = events_df.sort_values("data")
     except Exception as e:
         logger.error(f"Errore nella lettura del CSV: {e}")
-        return pd.DataFrame(columns=["data", "event", "descrizione"])
 
 # Funzione per inviare il promemoria automatico
 async def send_reminder(context: CallbackContext):
-    df = read_events()
+    global events_df
     today = datetime.now(ITALY_TZ).date()
 
-    today_events = df[df["data"].dt.date == today]
+    today_events = events_df[events_df["data"].dt.date == today]
     if not today_events.empty:
         event = today_events.iloc[0]
         message = f"🎯 *Gara di Oggi*\n📅 {event['data'].strftime('%d-%m-%Y')}\n📌 {event['event']}\n📝 {event['descrizione']}"
     else:
         tomorrow = today + timedelta(days=1)
-        tomorrow_events = df[df["data"].dt.date == tomorrow]
+        tomorrow_events = events_df[events_df["data"].dt.date == tomorrow]
         if not tomorrow_events.empty:
             event = tomorrow_events.iloc[0]
             message = f"📅 *Nessuna gara oggi. Prossima gara domani!*\n📅 {event['data'].strftime('%d-%m-%Y')}\n📌 {event['event']}\n📝 {event['descrizione']}"
@@ -83,9 +85,9 @@ async def send_reminder(context: CallbackContext):
 
 # Comando /next per il prossimo evento
 async def next_event(update: Update, context: CallbackContext):
-    df = read_events()
+    global events_df
     today = datetime.now(ITALY_TZ).date()
-    future_events = df[df["data"].dt.date >= today]
+    future_events = events_df[events_df["data"].dt.date >= today]
 
     if not future_events.empty:
         next_event = future_events.iloc[0]
@@ -97,9 +99,9 @@ async def next_event(update: Update, context: CallbackContext):
 
 # Comando /next5events per i prossimi 5 eventi
 async def next_5_events(update: Update, context: CallbackContext):
-    df = read_events()
+    global events_df
     today = datetime.now(ITALY_TZ).date()
-    future_events = df[df["data"].dt.date >= today]
+    future_events = events_df[events_df["data"].dt.date >= today]
 
     if not future_events.empty:
         events_list = future_events.head(5)
@@ -113,12 +115,12 @@ async def next_5_events(update: Update, context: CallbackContext):
 
 # Funzione per il riepilogo settimanale delle gare
 async def send_weekly_summary(context: CallbackContext):
-    df = read_events()
+    global events_df
     today = datetime.now(ITALY_TZ).date()
     next_monday = today + timedelta(days=(7 - today.weekday()))  # Prossimo lunedì
     next_sunday = next_monday + timedelta(days=6)  # Fine settimana
 
-    upcoming_events = df[(df["data"].dt.date >= next_monday) & (df["data"].dt.date <= next_sunday)]
+    upcoming_events = events_df[(events_df["data"].dt.date >= next_monday) & (events_df["data"].dt.date <= next_sunday)]
 
     if not upcoming_events.empty:
         message = "📆 *Gare della prossima settimana:*\n"
@@ -136,6 +138,9 @@ async def send_weekly_summary(context: CallbackContext):
 
 # Configura il bot con i comandi e la JobQueue
 def main():
+    # Aggiorna i dati all'avvio
+    update_events()
+
     app = Application.builder().token(TOKEN).build()
 
     # Aggiungi i comandi
