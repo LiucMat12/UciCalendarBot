@@ -41,13 +41,37 @@ data,event,descrizione
 2025-04-29,Tour de Romandie 🇨🇭,Dal 29/04 al 04/05 - Cat 2.UWT - SUI
 2025-05-01,Eschborn-Frankfurt 🇩🇪,Dal 01/05 al 01/05 - Cat 1.UWT - GER
 2025-05-09,Giro d'Italia 🇮🇹,Dal 09/05 al 01/06 - Cat 2.UWT - ITA
+2025-05-09,Stage 1 ⛰️ Durrës - Tirana, 164 km
+2025-05-10,Stage 2 (ITT) ⛰️ Tirana - Tirana,	13.7 km
 2025-05-10,Grand Prix du Morbihan 🇫🇷,Dal 10/05 al 10/05 - Cat 1.Pro - FRA
+2025-05-11,Stage 3 ⛰️ Vlorë - Vlorë, 160 km
 2025-05-11,Tro-Bro Léon 🇫🇷,Dal 11/05 al 11/05 - Cat 1.Pro - FRA
+2025-05-12,Restday 😎,
+2025-05-13,Stage 4 🏜 Alberobello - Lecce,187 km
 2025-05-13,Classique Dunkerque / Grand prix des Hauts de France 🇫🇷,Dal 13/05 al 13/05 - Cat 1.Pro - FRA
+2025-05-14,Stage 5 ⛰️ Ceglie Messapica - Matera,144 km
 2025-05-14,4 Jours de Dunkerque / Grand Prix des Hauts de France 🇫🇷,Dal 14/05 al 18/05 - Cat 2.Pro - FRA
 2025-05-14,Tour de Hongrie 🇭🇺,Dal 14/05 al 18/05 - Cat 2.Pro - HUN
+2025-05-15,Stage 6 ⛰️ Potenza - Napoli,226 km
+2025-05-16,Stage 7 🏔 Castel di Sangro - Tagliacozzo,168 km
+2025-05-17,Stage 8 ⛰️ Giulianova - Castelraimondo,197 km
+2025-05-18,Stage 9 ⛰️ Gubbio - Siena,181 km
+2025-05-19,Restday 😎,	
+2025-05-20,Stage 10 (ITT) 🏜 Lucca - Pisa,28.6 km
+2025-05-21,Stage 11 🏔 Viareggio - Castelnovo ne’ Monti,	185 km
+2025-05-22,Stage 12 ⛰️ Modena - Viadana,172 km
+2025-05-23,Stage 13 ⛰️ Rovigo - Vicenza,180 km
+2025-05-24,Stage 14 🏜 Treviso - Nova Gorica,186 km
+2025-05-25,Stage 15 ⛰️ Fiume Veneto - Asiago,214 km
+2025-05-26,Restday 😎	,
+2025-05-27,Stage 16 🏔 Piazzola sul Brenta - San Valentino di Brentonico,199  km
+2025-05-28,Stage 17 🏔 San Michele all’Adige - Bormio,154 km
+2025-05-29,Stage 18 ⛰️ Morbegno - Cesano Maderno,144 km
 2025-05-29,Boucles de la Mayenne - Crédit Mutuel 🇫🇷,Dal 29/05 al 01/06 - Cat 2.Pro - FRA
 2025-05-29,Tour of Norway 🇳🇴,Dal 29/05 al 01/06 - Cat 2.Pro - NOR
+2025-05-30,Stage 19 🏔 Biella - Champoluc,166 km
+2025-05-31,Stage 20 🏔 Verrès - Sestriere,203 km
+2025-06-01,Stage 21 🏜 Roma - Roma,141 km
 2025-06-04,Tour of Slovenia 🇸🇮,Dal 04/06 al 08/06 - Cat 2.Pro - SLO
 2025-06-08,Brussels Cycling Classic 🇧🇪,Dal 08/06 al 08/06 - Cat 1.Pro - BEL
 2025-06-08,Critérium du Dauphiné 🇫🇷,Dal 08/06 al 15/06 - Cat 2.UWT - FRA
@@ -58,8 +82,31 @@ data,event,descrizione
 2025-06-21,National Road Championships - Italy 🇮🇹,Dal 21/06 al 29/06 - Cat CN - ITA
 2025-06-22,Copenhagen Sprint 🇩🇰,Dal 22/06 al 22/06 - Cat 1.UWT - DEN
 2025-07-05,Tour de France 🇫🇷,Dal 05/07 al 27/07 - Cat 2.UWT - FRA
+2025-07-05,Stage 1 ⛰️ Lille - Lille,185 km
+2025-07-06,Stage 2 ⛰️ Lauwin-Planque - Boulogne-sur-Mer,212 km
 2025-07-06,Tour of Magnificent Qinghai 🇨🇳,Dal 06/07 al 13/07 - Cat 2.Pro - CHN
+2025-07-07,Stage 3 ⛰️ Valenciennes - Dunkerque,178 km
+2025-07-08,Stage 4 ⛰️ Amiens Métropole - Rouen,173 km
+2025-07-09,Stage 5 (ITT) 🏜 Caen - Caen,33 km
+2025-07-10,Stage 6 ⛰️ Bayeux - Vire Normandie,201 km
+2025-07-11,Stage 7 ⛰️ Saint-Malo - Mûr-de-Bretagne,194 km
+2025-07-12,Stage 8 🏜 Saint-Méen-le-Grand - Laval,174 km
+2025-07-13,Stage 9 🏜 Chinon - Châteauroux,170 km
+2025-07-14,Stage 10 ⛰️ Ennezat - Le Mont-Dore Puy de Sancy,163 km
+2025-07-15,Restday 😎,	
+2025-07-16,Stage 11 🏜 Toulouse - Toulouse,154 km
+2025-07-17,Stage 12 🏔 Auch - Hautacam,181 km
+2025-07-18,Stage 13 (ITT) 🏔 Loudenvielle - Peyragudes,11 km
+2025-07-19,Stage 14 🏔 Pau - Luchon-Superbagnères,183 km
+2025-07-20,Stage 15 ⛰️ Muret - Carcassonne,169 km
+2025-07-21,Restday 😎,	
+2025-07-22,Stage 16 🏔 Montpellier - Mont Ventoux,172 km
+2025-07-23,Stage 17 🏜 Bollène - Valence,161 km
+2025-07-24,Stage 18 🏔 Vif - Col de la Loze,171 km
+2025-07-25,Stage 19 🏔 Albertville - La Plagne,130 km
+2025-07-26,Stage 20 ⛰️ Nantua - Pontarlier,185 km
 2025-07-26,Ethias-Tour de Wallonie 🇧🇪,Dal 26/07 al 30/07 - Cat 2.Pro - BEL
+2025-07-27,Stage 21 🏜 Mantes-la-Ville - Paris,120 km
 2025-08-02,Donostia San Sebastian Klasikoa 🇪🇸,Dal 02/08 al 02/08 - Cat 1.UWT - ESP
 2025-08-04,Tour de Pologne 🇵🇱,Dal 04/08 al 10/08 - Cat 2.UWT - POL
 2025-08-05,Vuelta a Burgos 🇪🇸,Dal 05/08 al 09/08 - Cat 2.Pro - ESP
