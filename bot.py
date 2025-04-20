@@ -144,9 +144,13 @@ def main():
     app.add_handler(CommandHandler("next5events", next_5_events))
 
     # Configura JobQueue per il promemoria automatico
-    job_queue = app.job_queue
-    job_queue.run_daily(send_reminder, time=time(hour=23, minute=1, tzinfo=pytz.UTC))  # 00:01 italiane
-    job_queue.run_daily(send_weekly_summary, time=time(hour=23, minute=1, tzinfo=pytz.UTC), days=(6,))  # Domenica
+
+rome_tz = pytz.timezone('Europe/Rome')
+
+job_queue = app.job_queue
+job_queue.run_daily(send_reminder, time=time(hour=0, minute=1, tzinfo=rome_tz))  # 00:01 italiane
+job_queue.run_daily(send_weekly_summary, time=time(hour=0, minute=1, tzinfo=rome_tz), days=(6,))  # Domenica
+
 
     logger.info("Il bot è avviato e in ascolto dei comandi...")
     app.run_polling()
