@@ -139,21 +139,20 @@ def main():
     app = Application.builder().token(TOKEN).build()
 
     # Aggiungi i comandi
-    app.add_handler(CommandHandler("start", start))  # REGISTRA GLI UTENTI
+    app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("next", next_event))
     app.add_handler(CommandHandler("next5events", next_5_events))
 
     # Configura JobQueue per il promemoria automatico
+    rome_tz = pytz.timezone('Europe/Rome')
 
-rome_tz = pytz.timezone('Europe/Rome')
-
-job_queue = app.job_queue
-job_queue.run_daily(send_reminder, time=time(hour=0, minute=1, tzinfo=rome_tz))  # 00:01 italiane
-job_queue.run_daily(send_weekly_summary, time=time(hour=0, minute=1, tzinfo=rome_tz), days=(6,))  # Domenica
-
+    job_queue = app.job_queue
+    job_queue.run_daily(send_reminder, time=time(hour=0, minute=1, tzinfo=rome_tz))  # 00:01 italiane
+    job_queue.run_daily(send_weekly_summary, time=time(hour=0, minute=1, tzinfo=rome_tz), days=(6,))  # Domenica
 
     logger.info("Il bot è avviato e in ascolto dei comandi...")
     app.run_polling()
+
 
 if __name__ == "__main__":
     main()
